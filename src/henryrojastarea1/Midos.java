@@ -14,7 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -22,18 +21,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Midos {
-    /**
-     * Memory Path
-     * @var String
-     * @since 1.0.1
-     */
-    final static String memoryPath = "C:\\MIDOSFRE.txt";
-    /**
-     * Directory path
-     * @var String
-     * @since 1.0.1
-     */
-    final static String dictoriesPath = "C:\\MIDOSTRE.txt";
     /**
      * Load a file
      * @param fileName String
@@ -74,14 +61,14 @@ public class Midos {
      * @param directories
      * @return
      */
-    public static String makeDirectory (String name, int memory, List<String> directories) { 
+    public static List<Directory> makeDirectory (String name, int memory, List<Directory> directories, Directory parent) { 
         try {
             String convertIntoCapital = name.toUpperCase();
             if ( memory < 0 || memory == 0 ) {
                     System.out.println("No hay memoria disponible");
                 } else if ( convertIntoCapital.isEmpty() ) {
                     System.out.println("DirectoriOs deben tener nombre");
-                } else if ( directories.size() > 8 ) {
+                } else if ( parent != null && parent.numberOfChildren > 8 ) {
                     System.out.println("No se pueden agregar mas de 8 directorios");
                 } else if ( convertIntoCapital.length() > 8 ) {
                     System.out.println("Los directories no pueden exceder los 8 caracteres");
@@ -89,15 +76,32 @@ public class Midos {
                     System.out.println("Primer caracter no puede ser un numero");
                 } else if ( convertIntoCapital.matches("[-/@#$%^&_+=()]") ) {
                     System.out.println("No se permiten caracteres especiales");
-                } else if ( directories.contains(convertIntoCapital) ) {
-                    System.out.println("Diretorio ya ha sido creado");
+                } else if (Directory.numberOfRootDirectories(directories) > 8) {
+                    System.out.println("No se pueden agregar mas de 8 directorios");
                 } else {
-                    return convertIntoCapital;
+                    String parentName;
+                    int parentPossition; 
+                    if (parent == null) {
+                        parentName = null;
+                        parentPossition = 0;
+                    } else {
+                        parentName = parent.name;
+                        parentPossition = parent.possition + 1;
+                    }
+                    Directory directory  = new Directory(
+                        name, 
+                        parentName, 
+                        false, 
+                        0, 
+                        parentPossition
+                    );
+                    directories.add(directory);
+                    return directories;
                 } 
         } catch ( Exception ex) {
             ex.printStackTrace();  
         }
-        return null;
+        return directories;
     }
     /**
      * Clear the Screen

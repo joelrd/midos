@@ -6,20 +6,9 @@
  * @package MIDOS
  */
 package henryrojastarea1;
-import java.io.File;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import henryrojastarea1.Midos;
 
 /**
  * Main execution
@@ -46,20 +35,24 @@ public class HenryRojasTarea1 {
      */
     public static void main(String[] args) {
         int memory = 256;
-        List<String> directories = new ArrayList<>();
-        memory = (int) Midos.loadAFile(memoryPath);
-        directories = (List<String>) Midos.loadAFile(dictoriesPath);
+        List<Directory> directories = new ArrayList<Directory>();
+        if (Midos.loadAFile(memoryPath) != null) {
+            memory = (int) Midos.loadAFile(memoryPath);
+        }
+        if (Midos.loadAFile(dictoriesPath) != null) {
+            directories = (List<Directory>) Midos.loadAFile(dictoriesPath);
+        }
         boolean isExit = true;
         String value;
         Midos.header(memory);
         while ( isExit ) {
+            int directoryCount = directories.size();
             System.out.print("M:\\");
             Scanner command = new Scanner(System.in);
             value = command.nextLine();
             if ( value.startsWith("MD ") || value.startsWith("md ")) {
-                String directory = Midos.makeDirectory(value.substring(3, value.length()), memory, directories);
-                if (directory != null) {
-                    directories.add(directory);
+                directories = Midos.makeDirectory(value.substring(3, value.length()), memory, directories, null);
+                if (directoryCount < directories.size()) {
                     memory = memory - 8;
                 }      
             } else {
