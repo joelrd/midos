@@ -65,7 +65,7 @@ public class Midos {
         try {
             String parentName = null;
             int parentPossition = 0;
-            if ( parent != null) {
+            if (parent != null) {
                 parentPossition = parent.possition + 1;
                 parentName = parent.name;
             }
@@ -87,6 +87,9 @@ public class Midos {
                 } else if (Directory.isDuplicated(name, directories, parentPossition)) {
                     System.out.println("Ya se agrego el directorio");
                 } else {
+                    if (parent != null) {
+                        directories = saveParentDirectory(directories, parent, true, parent.numberOfChildren + 1);
+                    }
                     Directory directory  = new Directory(
                         name, 
                         parentName, 
@@ -224,39 +227,130 @@ public class Midos {
         try {
             int size = path.size();
             int index = size - 1;
-            switch (value) {
-                case "..": if (size == 2) {
-                        System.out.println("Se encuentra en el directorio raiz");
-                    } else {
-                        path.remove(index);
-                        return path;
-                    }
-                    break;  
-                case " ..": if (size == 2) {
-                        System.out.println("Se encuentra en el directorio raiz");
-                    } else {
-                        path.remove(index);
-                        return path;
-                    }
-                    break;
-                case "/": ;
-                    break;
-               
-                default:  Midos.invalidCommand();
-                    break;
+            if ((name.startsWith("..") && name.length() == 2 ) || (name.startsWith(" ..") && name.length() == 3)  ) {
+                if (size == 2) {
+                    System.out.println("Se encuentra en el directorio raiz");
+                } else {
+                    path.remove(index - 1);
+                    return path;
                 }
-            if (size == 2) {
+            } else if (name.startsWith(" \\") && name.length() == 2) {
+                if (size == 2) {
+                    System.out.println("Se encuentra en el directorio raiz");
+                } else {
+                   for (int i = index - 1; i > 0; i--) {
+                       path.remove(i);
+                   }
+                   return path;
+                }
+            } else if (name.startsWith(" ") && !name.startsWith(" \\") && !name.startsWith("..") && !name.startsWith(" ..")) {
+                String sanatizedName = name.substring(1, name.length());
                 for (Directory directory : directories ) {
-                    if ( directory.possition == index - 1 && directory.name.contentEquals(name) ) {
-                        path.add(index, directory.name);
+                    if ( directory.possition == index - 1 && directory.name.contentEquals(sanatizedName) ) {
+                        String slashedName = "\\";
+                        if (size == 2) {
+                            path.add(index, directory.name);
+                        } else {
+                            path.add(index, slashedName+directory.name);
+                        }    
                         return path;
                     }
                 }
                 System.out.println("No existe un directorio con ese nombre en ese directorio");
+            } else {
+                
+                System.out.println("Comando invalido al llamar el directorio");
             }
         } catch( Exception ex) {
             ex.printStackTrace();
         }
         return path;
+    }
+    /**
+     * Gets the parent directory from the path
+     * @since 1.0.1
+     * @param path
+     * @param directories
+     * @return 
+     */
+    public static Directory getParentByPath(List<String> path, List<Directory> directories) {
+        try {
+            if ( path.size() == 2 || directories.size() == 0 ) {
+                return null;
+            } else {
+                int index = path.size() - 2;
+                String name = path.get(index);
+                if (name.startsWith("\\")) {
+                    name = name.substring(1, name.length());
+                }
+                for (Directory directory : directories ) {
+                    if (directory.name.contains(name)) {
+                        return directory;
+                    }
+                }
+            }
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * Updates parent directory
+     * @param directories
+     * @param parent
+     * @param hasChildren
+     * @param numberOfChildren
+     * @return 
+     */
+    public static List<Directory> saveParentDirectory(List<Directory> directories, Directory parent, boolean hasChildren, int numberOfChildren) {
+        try {
+            int index = directories.indexOf(parent);
+            parent.hasChildren = hasChildren;
+            parent.numberOfChildren = numberOfChildren;
+            directories.set(index, parent);
+            return directories;
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
+        return directories;
+    }
+    /**
+     * Remove a directory
+     * @since 1.0.1
+     * @param name
+     * @param directories
+     * @param parent
+     * @return 
+     */
+    public static List<Directory> removeDirectory (String name, List<Directory> directories, Directory parent) { 
+        try {
+            Directory directory = Directory.getDirectory(name, directories);
+             if (directory == null) {
+                 System.out.println("Caracter invalido");
+                 return directories;
+                } else if ( parent != null && directory.parent != parent.name) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( directory.hasChildren ) {
+                    System.out.println("No se puede borrar carpetas con contenido");
+                    return directories;
+                } else if ( parent == null && directory.possition != 0 ) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else {
+                    if (parent != null) {
+                        boolean hasChildren = true;
+                        if( parent.numberOfChildren == 1 ) {
+                            hasChildren = false;
+                        }
+                        directories = saveParentDirectory(directories, parent, hasChildren, parent.numberOfChildren - 1);
+                    }
+                    directories.remove(directory);
+                    return directories;
+                } 
+        } catch ( Exception ex) {
+            ex.printStackTrace();  
+        }
+        return directories;
     }
 }
