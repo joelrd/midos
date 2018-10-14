@@ -150,6 +150,7 @@ public class Directory implements java.io.Serializable {
     }
     /**
      * Gets a directory from given name
+     * @since 1.0.1
      * @param name
      * @param directories
      * @return 
@@ -158,7 +159,7 @@ public class Directory implements java.io.Serializable {
         try {
             if (directories.size() > 0 ) {
                 for ( Directory directory : directories) {
-                    if (directory.name == name) {
+                    if (directory.name.contentEquals(name)) {
                         return directory;
                     }
                 }
@@ -168,6 +169,14 @@ public class Directory implements java.io.Serializable {
         }
         return null;
     }
+    /**
+     * Save Directories in the ArrayList
+     * @since 1.0.1
+     * @param directories
+     * @param hasChildren
+     * @param numberOfChildren
+     * @return 
+     */
     public static List<Directory> saveInDirectories(List<Directory> directories, boolean hasChildren, int numberOfChildren) {
         try {
             
@@ -176,7 +185,12 @@ public class Directory implements java.io.Serializable {
         }
         return directories;
     }
-    
+    /**
+     * Counts the number of null in a directory
+     * @since 1.0.1
+     * @param directories
+     * @return 
+     */
     public static int numberOfRootDirectories(List<Directory> directories) {
         try {
             int counter = 0;
@@ -191,4 +205,28 @@ public class Directory implements java.io.Serializable {
         }
         return 0;
     }
+    /**
+     * Checks if directory is duplicated
+     * @since 1.0.1
+     * @param name
+     * @param directories
+     * @param possition
+     * @return 
+     */
+    public static boolean isDuplicated(String name, List<Directory> directories, int possition) {
+        try {
+            if ( directories.size() == 0 ) {
+                return false;
+            }
+            for ( Directory directory : directories ) {
+                if (directory.name.contentEquals(name) && directory.possition == possition) {
+                    return true;
+                }
+            }
+            return false;
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
+        return true;
+    } 
 }

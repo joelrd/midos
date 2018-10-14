@@ -7,6 +7,7 @@
  */
 package henryrojastarea1;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,28 +46,35 @@ public class HenryRojasTarea1 {
         boolean isExit = true;
         String value;
         Midos.header(memory);
+        List<String> path = new ArrayList<String>();
+        path.add("M:\\");
+        path.add(">");
         while ( isExit ) {
             int directoryCount = directories.size();
-            System.out.print("M:\\");
+            Midos.displayPath(path);
             Scanner command = new Scanner(System.in);
             value = command.nextLine();
-            if ( value.startsWith("MD ") || value.startsWith("md ")) {
+            if ( value.startsWith("MD ") || value.startsWith("md ") || value.startsWith("Md ") || value.startsWith("mD ")) {
                 directories = Midos.makeDirectory(value.substring(3, value.length()), memory, directories, null);
                 if (directoryCount < directories.size()) {
                     memory = memory - 8;
                 }      
+            } else if (value.startsWith("CD ") || value.startsWith("cd ") || value.startsWith("Cd ") || value.startsWith("cD ")) {
+                path = Midos.callDirectory(path, directories, value.substring(3, value.length()));
             } else {
                 switch (value.toUpperCase()) {
                 case "CLS": Midos.clearScreen();
                     break;  
-                case "EXIT": isExit = Midos.exitMidos();
+                case "EXIT": isExit = Midos.exitMidos(path);
                     break;
                 case "VER": Midos.header(memory);
                     break;
                 case "DATE": Midos.showDate();
                     break;
                 case "TIME": Midos.showTime();
-                    break;              
+                    break;
+                case "CD": Midos.showTime();
+                    break;
                 default:  Midos.invalidCommand();
                     break;
                 }

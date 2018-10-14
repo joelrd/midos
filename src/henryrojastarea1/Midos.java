@@ -63,6 +63,12 @@ public class Midos {
      */
     public static List<Directory> makeDirectory (String name, int memory, List<Directory> directories, Directory parent) { 
         try {
+            String parentName = null;
+            int parentPossition = 0;
+            if ( parent != null) {
+                parentPossition = parent.possition + 1;
+                parentName = parent.name;
+            }
             String convertIntoCapital = name.toUpperCase();
             if ( memory < 0 || memory == 0 ) {
                     System.out.println("No hay memoria disponible");
@@ -78,16 +84,9 @@ public class Midos {
                     System.out.println("No se permiten caracteres especiales");
                 } else if (Directory.numberOfRootDirectories(directories) > 8) {
                     System.out.println("No se pueden agregar mas de 8 directorios");
+                } else if (Directory.isDuplicated(name, directories, parentPossition)) {
+                    System.out.println("Ya se agrego el directorio");
                 } else {
-                    String parentName;
-                    int parentPossition; 
-                    if (parent == null) {
-                        parentName = null;
-                        parentPossition = 0;
-                    } else {
-                        parentName = parent.name;
-                        parentPossition = parent.possition + 1;
-                    }
                     Directory directory  = new Directory(
                         name, 
                         parentName, 
@@ -124,10 +123,10 @@ public class Midos {
      * @since 1.0.1
      * @return 
      */
-    public static Boolean exitMidos() {
+    public static Boolean exitMidos(List<String> path) {
         try {
             System.out.println("¿Está seguro de salir de MIDOS?");
-            System.out.print("M:\\");
+            displayPath(path);
             String wantToExit;
             boolean isExiting = true;
             while ( isExiting ) {
@@ -138,7 +137,7 @@ public class Midos {
                     case "N": isExiting = false;
                         break;
                     default: System.out.println("Solo puede ser S o N");
-                        System.out.print("M:\\");
+                        displayPath(path);
                     break;
                 }
             }
@@ -202,5 +201,62 @@ public class Midos {
         } catch( Exception ex) {
             ex.printStackTrace();
         }
+    }
+    /**
+     * Returns the path
+     * @param path 
+     */
+    public static void displayPath(List<String> path) {
+        try {
+            for( String element : path ) {
+                System.out.print(element);
+            }
+        } catch( Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * Save values in the file
+     * @param value
+     * @param path 
+     */
+    public static List<String> callDirectory(List<String> path, List<Directory> directories, String name) {
+        try {
+            int size = path.size();
+            int index = size - 1;
+            switch (value) {
+                case "..": if (size == 2) {
+                        System.out.println("Se encuentra en el directorio raiz");
+                    } else {
+                        path.remove(index);
+                        return path;
+                    }
+                    break;  
+                case " ..": if (size == 2) {
+                        System.out.println("Se encuentra en el directorio raiz");
+                    } else {
+                        path.remove(index);
+                        return path;
+                    }
+                    break;
+                case "/": ;
+                    break;
+               
+                default:  Midos.invalidCommand();
+                    break;
+                }
+            if (size == 2) {
+                for (Directory directory : directories ) {
+                    if ( directory.possition == index - 1 && directory.name.contentEquals(name) ) {
+                        path.add(index, directory.name);
+                        return path;
+                    }
+                }
+                System.out.println("No existe un directorio con ese nombre en ese directorio");
+            }
+        } catch( Exception ex) {
+            ex.printStackTrace();
+        }
+        return path;
     }
 }
