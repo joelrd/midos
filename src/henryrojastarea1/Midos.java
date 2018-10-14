@@ -353,4 +353,57 @@ public class Midos {
         }
         return directories;
     }
+    /**
+     * Sort the command line
+     * @since 1.0.1
+     * @param path
+     * @param name
+     * @return 
+     */
+    public static List<String> prompt(List<String> path, String name) {
+        try {
+            System.out.println(name);
+            int index = path.size() - 1;
+            if (name.isEmpty() || name.equals("$P $G")) {
+                path.set(0, "M:\\");
+                path.set(index, ">");
+                return path;
+            } else if (name.equals("$P")) {
+                path.set(0, "M:\\");
+                path.set(index, "");
+            } else if (name.equals("$G")) {
+                path.set(0, "");
+                path.set(index, ">");
+            } else if (name.equals("$G $P")) {
+                path.set(index, "M:\\");
+                path.set(0, ">");
+            } else {
+                System.out.println("Comando invalido");
+            }
+            return path;
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
+        return path;
+    }
+    /**
+     * Create Directories
+     * @since 1.0.1
+     * @param directories
+     * @return 
+     */
+    public static List<Directory> createContent(List<Directory> directories) {
+        try {
+            Directory midos = new Directory("MIDOS", null, true, 1, 0);
+            Directory document = new Directory("DOCUMENT", midos.name, true, 1, midos.possition + 1);
+            Directory tareas = new Directory("TAREAS", document.name, false, 0, document.possition + 1);
+            directories.add(midos);
+            directories.add(document);
+            directories.add(tareas);
+            return directories;
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
+        return directories;
+    }
 }

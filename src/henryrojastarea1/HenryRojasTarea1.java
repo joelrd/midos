@@ -42,6 +42,8 @@ public class HenryRojasTarea1 {
         }
         if (Midos.loadAFile(dictoriesPath) != null) {
             directories = (List<Directory>) Midos.loadAFile(dictoriesPath);
+        } else {
+            directories = Midos.createContent(directories);
         }
         boolean isExit = true;
         String value;
@@ -53,19 +55,25 @@ public class HenryRojasTarea1 {
             int directoryCount = directories.size();
             Midos.displayPath(path);
             Scanner command = new Scanner(System.in);
-            value = command.nextLine();
-            if ( value.startsWith("MD ") || value.startsWith("md ") || value.startsWith("Md ") || value.startsWith("mD ")) {
-                directories = Midos.makeDirectory(value.substring(3, value.length()).toUpperCase(), memory, directories, Midos.getParentByPath(path, directories));
+            value = command.nextLine().toUpperCase();
+            if (value.startsWith("MD ")) {
+                directories = Midos.makeDirectory(value.substring(3, value.length()), memory, directories, Midos.getParentByPath(path, directories));
                 if (directoryCount < directories.size()) {
                     memory = memory - 8;
                 }      
-            } else if (value.startsWith("CD") || value.startsWith("cd") || value.startsWith("Cd") || value.startsWith("cD")) {
-                path = Midos.callDirectory(path, directories, value.substring(2, value.length()).toUpperCase());
-            } else if (value.startsWith("RD") || value.startsWith("rd") || value.startsWith("Rd") || value.startsWith("rD")) {
-                directories = Midos.removeDirectory(value.substring(3, value.length()).toUpperCase(), directories, Midos.getParentByPath(path, directories));
+            } else if (value.startsWith("CD")) {
+                path = Midos.callDirectory(path, directories, value.substring(2, value.length()));
+            } else if (value.startsWith("RD ")) {
+                directories = Midos.removeDirectory(value.substring(3, value.length()), directories, Midos.getParentByPath(path, directories));
                 if (directoryCount > directories.size()) {
                     memory = memory + 8;
                 }  
+            } else if (value.startsWith("PROMPT ") || value.startsWith("PROMPT")) {
+                String name = "";
+                if ( value.length() > 6 ) {
+                  name = value.substring(7, value.length());   
+                } 
+                path = Midos.prompt(path, name);
             } else {
                 switch (value.toUpperCase()) {
                 case "CLS": Midos.clearScreen();
