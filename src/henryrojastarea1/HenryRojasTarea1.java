@@ -44,6 +44,7 @@ public class HenryRojasTarea1 {
             directories = (List<Directory>) Midos.loadAFile(dictoriesPath);
         } else {
             directories = Midos.createContent(directories);
+            memory = 256 - 8*3;
         }
         boolean isExit = true;
         String value;
@@ -74,8 +75,10 @@ public class HenryRojasTarea1 {
                   name = value.substring(7, value.length());   
                 } 
                 path = Midos.prompt(path, name);
+            } else if (value.equals("DIR")) {
+                Midos.directories(directories, Midos.getParentByPath(path, directories), memory);
             } else {
-                switch (value.toUpperCase()) {
+                switch (value) {
                 case "CLS": Midos.clearScreen();
                     break;  
                 case "EXIT": isExit = Midos.exitMidos(path);

@@ -14,7 +14,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -405,5 +408,33 @@ public class Midos {
             ex.printStackTrace();
         }
         return directories;
+    }
+    /**
+     * Display files within a directory
+     * @since 1.0.1
+     * @param directories
+     * @param parent
+     * @param memory 
+     */
+    public static void directories(List<Directory> directories, Directory parent, int memory){
+        try {
+            System.out.println(parent.name);
+            List<String> collections = new ArrayList<String>(); 
+            for (Directory directory : directories) {
+                if((directory.parent == null ? parent.name == null : directory.parent.equals(parent.name))) {
+                   collections.add(directory.name);
+                }
+            }
+            if (collections.isEmpty()) {
+                System.out.println("La carpeta no tiene archivos");
+            } else {
+                System.out.println("El directorio posee: "+collections.size()+" directorios y una memoria disponible de: "+memory+"K");
+                for (String collection : collections) {
+                    System.out.println(collection+"<DIR>");
+                }
+            }
+        } catch ( Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
