@@ -1,23 +1,24 @@
 /*
  * @author Henry Rojas Douglas
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright Henry Rojas Douglas
  * @license MIT
  * @package henrojastarea1
  */
 package henryrojastarea1;
 
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Scanner;
 public class Midos {
     /**
      * Load a file
+     * @since 1.0.1
      * @param fileName String
      * @return Object
      */
@@ -57,14 +59,14 @@ public class Midos {
         System.out.println("Autor: Henry Rojas Douglas - 111490839");
     }
     /**
-     * Make a Directory
+     * Make a Archive
      * @since 1.0.1
      * @param name
      * @param memory
      * @param directories
      * @return
      */
-    public static List<Directory> makeDirectory (String name, int memory, List<Directory> directories, Directory parent) { 
+    public static List<Archive> makeDirectory (String name, int memory, List<Archive> directories, Archive parent) { 
         try {
             String parentName = null;
             int parentPossition = 0;
@@ -73,7 +75,7 @@ public class Midos {
                 parentName = parent.name;
             }
             String convertIntoCapital = name.toUpperCase();
-            if ( memory < 0 || memory == 0 ) {
+            if (memory < 8) {
                     System.out.println("No hay memoria disponible");
                 } else if ( convertIntoCapital.isEmpty() ) {
                     System.out.println("DirectoriOs deben tener nombre");
@@ -85,21 +87,15 @@ public class Midos {
                     System.out.println("Primer caracter no puede ser un numero");
                 } else if ( convertIntoCapital.matches("[-/@#$%^&_+=()]") ) {
                     System.out.println("No se permiten caracteres especiales");
-                } else if (Directory.numberOfRootDirectories(directories) > 8) {
+                } else if (Archive.numberOfRootDirectories(directories) > 8) {
                     System.out.println("No se pueden agregar mas de 8 directorios");
-                } else if (Directory.isDuplicated(name, directories, parentPossition)) {
+                } else if (Archive.isDuplicated(name, directories, parentPossition)) {
                     System.out.println("Ya se agrego el directorio");
                 } else {
                     if (parent != null) {
                         directories = saveParentDirectory(directories, parent, true, parent.numberOfChildren + 1);
                     }
-                    Directory directory  = new Directory(
-                        name, 
-                        parentName, 
-                        false, 
-                        0, 
-                        parentPossition
-                    );
+                    Archive directory  = new Archive(name, parentName, false, 0, parentPossition, parent == null ? false : true, false, null);
                     directories.add(directory);
                     return directories;
                 } 
@@ -195,6 +191,7 @@ public class Midos {
     }
     /**
      * Save values in the file
+     * @since 1.0.1
      * @param value
      * @param path 
      */
@@ -210,6 +207,7 @@ public class Midos {
     }
     /**
      * Returns the path
+     * @since 1.0.1
      * @param path 
      */
     public static void displayPath(List<String> path) {
@@ -223,10 +221,11 @@ public class Midos {
     }
     /**
      * Save values in the file
+     * @since 1.0.1
      * @param value
      * @param path 
      */
-    public static List<String> callDirectory(List<String> path, List<Directory> directories, String name) {
+    public static List<String> callDirectory(List<String> path, List<Archive> directories, String name) {
         try {
             int size = path.size();
             int index = size - 1;
@@ -248,16 +247,21 @@ public class Midos {
                 }
             } else if (name.startsWith(" ") && !name.startsWith(" \\") && !name.startsWith("..") && !name.startsWith(" ..")) {
                 String sanatizedName = name.substring(1, name.length());
-                for (Directory directory : directories ) {
-                    if ( directory.possition == index - 1 && directory.name.contentEquals(sanatizedName) ) {
-                        String slashedName = "\\";
-                        if (size == 2) {
-                            path.add(index, directory.name);
+                for (Archive directory : directories ) {
+                    if ( directory.possition == index - 1 && directory.name.contentEquals(sanatizedName) && !directory.isText ) {
+                        if (!directory.isText) {
+                            String slashedName = "\\";
+                            if (size == 2) {
+                                path.add(index, directory.name);
+                            } else {
+                                path.add(index, slashedName+directory.name);
+                            }    
+                            return path;
                         } else {
-                            path.add(index, slashedName+directory.name);
+                            System.out.println("El archivo que trata de accesar no es un directory");
+                            return path;
                         }    
-                        return path;
-                    }
+                    } 
                 }
                 System.out.println("No existe un directorio con ese nombre en ese directorio");
             } else {
@@ -276,7 +280,7 @@ public class Midos {
      * @param directories
      * @return 
      */
-    public static Directory getParentByPath(List<String> path, List<Directory> directories) {
+    public static Archive getParentByPath(List<String> path, List<Archive> directories) {
         try {
             if ( path.size() == 2 || directories.size() == 0 ) {
                 return null;
@@ -286,8 +290,8 @@ public class Midos {
                 if (name.startsWith("\\")) {
                     name = name.substring(1, name.length());
                 }
-                for (Directory directory : directories ) {
-                    if (directory.name.contains(name)) {
+                for (Archive directory : directories ) {
+                    if (directory.name.equals(name)) {
                         return directory;
                     }
                 }
@@ -299,13 +303,14 @@ public class Midos {
     }
     /**
      * Updates parent directory
+     * @since 1.0.1
      * @param directories
      * @param parent
      * @param hasChildren
      * @param numberOfChildren
      * @return 
      */
-    public static List<Directory> saveParentDirectory(List<Directory> directories, Directory parent, boolean hasChildren, int numberOfChildren) {
+    public static List<Archive> saveParentDirectory(List<Archive> directories, Archive parent, boolean hasChildren, int numberOfChildren) {
         try {
             int index = directories.indexOf(parent);
             parent.hasChildren = hasChildren;
@@ -325,9 +330,9 @@ public class Midos {
      * @param parent
      * @return 
      */
-    public static List<Directory> removeDirectory (String name, List<Directory> directories, Directory parent) { 
+    public static List<Archive> removeDirectory (String name, List<Archive> directories, Archive parent) { 
         try {
-            Directory directory = Directory.getDirectory(name, directories);
+            Archive directory = Archive.getDirectory(name, directories);
              if (directory == null) {
                  System.out.println("Caracter invalido");
                  return directories;
@@ -339,6 +344,9 @@ public class Midos {
                     return directories;
                 } else if ( parent == null && directory.possition != 0 ) {
                     System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( directory.isText ) {
+                    System.out.println("No se puede borrar archivos");
                     return directories;
                 } else {
                     if (parent != null) {
@@ -395,11 +403,11 @@ public class Midos {
      * @param directories
      * @return 
      */
-    public static List<Directory> createContent(List<Directory> directories) {
+    public static List<Archive> createContent(List<Archive> directories) {
         try {
-            Directory midos = new Directory("MIDOS", null, true, 1, 0);
-            Directory document = new Directory("DOCUMENT", midos.name, true, 1, midos.possition + 1);
-            Directory tareas = new Directory("TAREAS", document.name, false, 0, document.possition + 1);
+            Archive midos = new Archive("MIDOS", null, true, 1, 0, false, false, null);
+            Archive document = new Archive("DOCUMENT", midos.name, true, 1, midos.possition + 1, true, false, null);
+            Archive tareas = new Archive("TAREAS", document.name, false, 0, document.possition + 1, true, true, "Testing out type command");
             directories.add(midos);
             directories.add(document);
             directories.add(tareas);
@@ -416,25 +424,172 @@ public class Midos {
      * @param parent
      * @param memory 
      */
-    public static void directories(List<Directory> directories, Directory parent, int memory){
+    public static void directories(List<Archive> directories, Archive parent, int memory){
         try {
-            System.out.println(parent.name);
-            List<String> collections = new ArrayList<String>(); 
-            for (Directory directory : directories) {
-                if((directory.parent == null ? parent.name == null : directory.parent.equals(parent.name))) {
-                   collections.add(directory.name);
-                }
-            }
-            if (collections.isEmpty()) {
-                System.out.println("La carpeta no tiene archivos");
+            if (parent == null) {
+                System.out.println("\\");
             } else {
-                System.out.println("El directorio posee: "+collections.size()+" directorios y una memoria disponible de: "+memory+"K");
-                for (String collection : collections) {
-                    System.out.println(collection+"<DIR>");
-                }
+                System.out.println(parent.name);
+            }
+            List<String> collections = new ArrayList<>(); 
+            for (Archive directory : directories) {
+                if ( parent == null ) {
+                    if (directory.parent == null) {
+                        collections.add(directory.name+" "+ (directory.isText ? "arch" : "<DIR>"));
+                    }
+                } else {
+                    if (directory.parent != null && directory.parent.equals(parent.name)) {
+                        collections.add(directory.name+" "+ (directory.isText ? "arch" : "<DIR>"));
+                    }
+                } 
+            }
+            System.out.println("El directorio posee: "+collections.size()+" directorios y una memoria disponible de: "+memory+"K");
+            for (String collection : collections) {
+                System.out.println(collection);
             }
         } catch ( Exception ex) {
             ex.printStackTrace();
         }
+    }
+    /**
+     * Copy content to Archive
+     * @since 1.0.2
+     * @param name
+     * @param memory
+     * @param directories
+     * @param parent
+     * @param path
+     * @return 
+     */
+    public static List<Archive> copyCon (String name, int memory, List<Archive> directories, Archive parent) { 
+        try {
+            Scanner e = new Scanner(System.in);
+            String parentName = null;
+            int parentPossition = 0;
+            if (parent != null) {
+                parentPossition = parent.possition + 1;
+                parentName = parent.name;
+            }
+            String convertIntoCapital = name.toUpperCase();
+            if (memory < 4) {
+                    System.out.println("No hay memoria disponible");
+                } else if ( convertIntoCapital.isEmpty() ) {
+                    System.out.println("DirectoriOs deben tener nombre");
+                } else if ( parent != null && parent.numberOfChildren > 8 ) {
+                    System.out.println("No se pueden agregar mas de 8 archivos");
+                } else if ( convertIntoCapital.length() > 8 ) {
+                    System.out.println("Los directories no pueden exceder los 8 caracteres");
+                } else if (convertIntoCapital.substring(0, 1).matches(".*\\d+.*")) {
+                    System.out.println("Primer caracter no puede ser un numero");
+                } else if ( convertIntoCapital.matches("[-/@#$%^&_+=()]") ) {
+                    System.out.println("No se permiten caracteres especiales");
+                } else if (Archive.numberOfRootDirectories(directories) > 8) {
+                    System.out.println("No se pueden agregar mas de 8 archivos");
+                } else if (Archive.isDuplicated(name, directories, parentPossition)) {
+                    System.out.println("Ya se agrego el archivo");
+                } else {
+                    System.out.print(">");
+                    String content = "";
+                    content = e.nextLine();
+                    Archive archive = new Archive(name, parentName, false, 0, parentPossition, parent == null ? false : true, true, content);
+                    if (parent != null) {
+                        directories = saveParentDirectory(directories, parent, true, parent.numberOfChildren + 1);
+                    }
+                    directories.add(archive);
+                    return directories;
+                } 
+        } catch ( Exception ex) {
+            ex.printStackTrace();  
+        }
+        return directories;
+    }
+    /**
+     * Return the content of a text file
+     * @since 1.0.2
+     * @param path
+     * @param directories
+     * @param name 
+     */
+    public static void type(List<String> path, List<Archive> directories, String name) {
+        try {
+            int size = path.size();
+            int index = size - 1;
+            if (name.isEmpty()) {
+                System.out.println("Favor ingresar un nombre");
+            } else {
+                for (Archive directory : directories ) {
+                    if ( directory.possition == index - 1 && directory.name.contentEquals(name)) {
+                        
+                        if (directory.isText) {
+                            if (directory.content.isEmpty()) {
+                                System.out.println("El archivo esta vacio");
+                                return;
+                            }   
+                            System.out.println(directory.content);
+                            return;
+                        } else {
+                            System.out.println("El archivo es un directory");
+                            return;
+                        }    
+                        
+                    } else if (directory.possition == index - 1 && directory.name.contentEquals(name) && !directory.isText) {
+                        
+                    }
+                }
+                System.out.println("No existe un archivo de texto con ese nombre en ese directorio");
+            }
+        } catch( Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * Deletes archives
+     * @since 1.0.2
+     * @param name
+     * @param directories
+     * @param parent
+     * @return 
+     */
+    public static List<Archive> delete (String name, List<Archive> directories, Archive parent) { 
+        try {
+            Archive directory = Archive.getDirectory(name, directories);
+             if (directory == null) {
+                 System.out.println("Caracter invalido");
+                 return directories;
+                } else if ( parent != null && directory.parent != parent.name) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( directory.hasChildren ) {
+                    System.out.println("No se puede borrar carpetas con contenido");
+                    return directories;
+                } else if ( parent == null && directory.possition != 0 ) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( !directory.isText ) {
+                    System.out.println("No se puede borrar directorios");
+                    return directories;
+                } else {
+                    if (parent != null) {
+                        boolean hasChildren = true;
+                        if( parent.numberOfChildren == 1 ) {
+                            hasChildren = false;
+                        }
+                        directories = saveParentDirectory(directories, parent, hasChildren, parent.numberOfChildren - 1);
+                    }
+                    directories.remove(directory);
+                    return directories;
+                } 
+        } catch (Exception ex) {
+            ex.printStackTrace();  
+        }
+        return directories;
+    }
+    public static List<Archive> rename(List<Archive> directories, String names, Archive parent) {
+        try {
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return directories;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Directory Class
+ * Archive Class
  * @author Henry Rojas Douglas
  * @version 1.0.1
  * @copyright Henry Rojas Douglas
@@ -10,58 +10,76 @@ package henryrojastarea1;
 
 import java.util.List;
 
-public class Directory implements java.io.Serializable {
+public class Archive implements java.io.Serializable {
     /**
-     * Directory name
+     * Archive name
      * @var
      * @since 1.0.1
      */
     protected String name;
     /**
-     * Directory parent
+     * Archive parent
      * @var
      * @since 1.0.1
      */
     protected String parent;
     /**
-     * Directory hasChildren
+     * Archive hasChildren
      * @var
      * @since 1.0.1
      */
     protected boolean hasChildren;
     /**
-     * Directory numberOfChildren
+     * Archive numberOfChildren
      * @var
      * @since 1.0.1
      */
     protected int numberOfChildren;
     /**
-     * Directory possition
+     * Archive possition
      * @var
      * @since 1.0.1
      */
     protected int possition;
     /**
-     * Directory hasParent
+     * Archive hasParent
      * @var
      * @since 1.0.1
      */
     protected boolean hasParent;
     /**
+     * Text file
+     * @var
+     * @since 1.0.2
+     */
+    protected boolean isText;
+    /**
+     * Content
+     * @var
+     * @since 1.0.2
+     */
+    protected String content;
+    /**
      * Constructor
-     * @since 1.0.1
+     * @since 1.0.2
      * @param name
      * @param parent
      * @param hasChildren
      * @param numberOfChildren
-     * @param possition 
+     * @param possition
+     * @param hasParent
+     * @param isText
+     * @param content 
      */
-    public Directory(String name, String parent, boolean hasChildren, int numberOfChildren, int possition) {
+    public Archive(String name, String parent, boolean hasChildren, int numberOfChildren, int possition, boolean hasParent, boolean isText, String content) {
         this.name = name;
         this.parent = parent;
         this.hasChildren = hasChildren;
         this.numberOfChildren = numberOfChildren;
         this.possition = possition;
+        this.hasParent = hasParent;
+        this.isText = isText;
+        this.content = content;
     }
 
     /**
@@ -149,16 +167,44 @@ public class Directory implements java.io.Serializable {
         this.hasParent = hasParent;
     }
     /**
+     * @since 1.0.2
+     * @return 
+     */
+    public boolean isIsText() {
+        return isText;
+    }
+    /**
+     * @since 1.0.2
+     * @param isText 
+     */
+    public void setIsText(boolean isText) {
+        this.isText = isText;
+    }
+    /**
+     * @since 1.0.2
+     * @return 
+     */
+    public String getContent() {
+        return content;
+    }
+    /**
+     * @since 1.0.2
+     * @param content 
+     */
+    public void setContent(String content) {
+        this.content = content;
+    }
+    /**
      * Gets a directory from given name
      * @since 1.0.1
      * @param name
      * @param directories
      * @return 
      */
-    public static Directory getDirectory(String name, List<Directory> directories) {
+    public static Archive getDirectory(String name, List<Archive> directories) {
         try {
             if (directories.size() > 0 ) {
-                for ( Directory directory : directories) {
+                for ( Archive directory : directories) {
                     if (directory.name.contentEquals(name)) {
                         return directory;
                     }
@@ -170,31 +216,15 @@ public class Directory implements java.io.Serializable {
         return null;
     }
     /**
-     * Save Directories in the ArrayList
-     * @since 1.0.1
-     * @param directories
-     * @param hasChildren
-     * @param numberOfChildren
-     * @return 
-     */
-    public static List<Directory> saveInDirectories(List<Directory> directories, boolean hasChildren, int numberOfChildren) {
-        try {
-            
-        } catch ( Exception ex) {
-            ex.printStackTrace();
-        }
-        return directories;
-    }
-    /**
      * Counts the number of null in a directory
      * @since 1.0.1
      * @param directories
      * @return 
      */
-    public static int numberOfRootDirectories(List<Directory> directories) {
+    public static int numberOfRootDirectories(List<Archive> directories) {
         try {
             int counter = 0;
-            for ( Directory directory : directories ) {
+            for ( Archive directory : directories ) {
                 if (directory.parent == null) {
                     counter++;
                 }
@@ -213,12 +243,12 @@ public class Directory implements java.io.Serializable {
      * @param possition
      * @return 
      */
-    public static boolean isDuplicated(String name, List<Directory> directories, int possition) {
+    public static boolean isDuplicated(String name, List<Archive> directories, int possition) {
         try {
             if ( directories.size() == 0 ) {
                 return false;
             }
-            for ( Directory directory : directories ) {
+            for ( Archive directory : directories ) {
                 if (directory.name.contentEquals(name) && directory.possition == possition) {
                     return true;
                 }

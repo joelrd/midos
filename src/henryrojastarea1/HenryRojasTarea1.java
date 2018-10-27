@@ -1,6 +1,6 @@
 /*
  * @author Henry Rojas Douglas 111490839
- * @version 1.0.1 
+ * @version 1.0.2 
  * @copyright MIT
  * @license Henry Rojas
  * @package MIDOS
@@ -23,7 +23,7 @@ public class HenryRojasTarea1 {
      */
     static String memoryPath = "C:\\MIDOSFRE.txt";
     /**
-     * Directory path
+     * Archive path
      * @var String
      * @since 1.0.1
      */
@@ -33,15 +33,16 @@ public class HenryRojasTarea1 {
      * @param args the command line arguments
      * @since 1.0.0
      * @Since 1.0.1 Refactoring, and added CD, Prompt, dir
+     * @since 1.0.2 Copy Con, type, del, ren
      */
     public static void main(String[] args) {
         int memory = 256;
-        List<Directory> directories = new ArrayList<Directory>();
+        List<Archive> directories = new ArrayList<Archive>();
         if (Midos.loadAFile(memoryPath) != null) {
             memory = (int) Midos.loadAFile(memoryPath);
         }
         if (Midos.loadAFile(dictoriesPath) != null) {
-            directories = (List<Directory>) Midos.loadAFile(dictoriesPath);
+            directories = (List<Archive>) Midos.loadAFile(dictoriesPath);
         } else {
             directories = Midos.createContent(directories);
             memory = 256 - 8*3;
@@ -77,7 +78,19 @@ public class HenryRojasTarea1 {
                 path = Midos.prompt(path, name);
             } else if (value.equals("DIR")) {
                 Midos.directories(directories, Midos.getParentByPath(path, directories), memory);
-            } else {
+            } else if (value.startsWith("COPY CON ")) {
+                directories = Midos.copyCon(value.substring(9, value.length()), memory, directories, Midos.getParentByPath(path, directories));
+                if (directoryCount < directories.size()) {
+                    memory = memory - 4;
+                }
+            } else if (value.startsWith("TYPE ")) {
+                Midos.type(path, directories, value.substring(5, value.length()));
+            } else if (value.startsWith("DEL ")) {
+                directories = Midos.delete(value.substring(4, value.length()), directories, Midos.getParentByPath(path, directories));
+                if (directoryCount > directories.size()) {
+                    memory = memory + 4;
+                }  
+            }else {
                 switch (value) {
                 case "CLS": Midos.clearScreen();
                     break;  
