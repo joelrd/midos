@@ -7,7 +7,6 @@
  */
 package henryrojastarea1;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -87,6 +86,11 @@ public class HenryRojasTarea1 {
                 Midos.type(path, directories, value.substring(5, value.length()));
             } else if (value.startsWith("DEL ")) {
                 directories = Midos.delete(value.substring(4, value.length()), directories, Midos.getParentByPath(path, directories));
+                if (directoryCount > directories.size()) {
+                    memory = memory + 4;
+                }  
+            }else if (value.startsWith("REN ")) {
+                directories = Midos.rename(value.substring(4, value.length()), directories, Midos.getParentByPath(path, directories));
                 if (directoryCount > directories.size()) {
                     memory = memory + 4;
                 }  

@@ -245,7 +245,7 @@ public class Archive implements java.io.Serializable {
      */
     public static boolean isDuplicated(String name, List<Archive> directories, int possition) {
         try {
-            if ( directories.size() == 0 ) {
+            if ( directories.isEmpty() ) {
                 return false;
             }
             for ( Archive directory : directories ) {

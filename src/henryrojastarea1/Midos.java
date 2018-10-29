@@ -7,12 +7,9 @@
  */
 package henryrojastarea1;
 
-import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
@@ -61,6 +58,7 @@ public class Midos {
     /**
      * Make a Archive
      * @since 1.0.1
+     * @param parent
      * @param name
      * @param memory
      * @param directories
@@ -122,6 +120,7 @@ public class Midos {
     }
     /**
      * Exit Midos
+     * @param path
      * @since 1.0.1
      * @return 
      */
@@ -221,8 +220,10 @@ public class Midos {
     }
     /**
      * Save values in the file
+     * @param directories
+     * @param name
+     * @return 
      * @since 1.0.1
-     * @param value
      * @param path 
      */
     public static List<String> callDirectory(List<String> path, List<Archive> directories, String name) {
@@ -282,7 +283,7 @@ public class Midos {
      */
     public static Archive getParentByPath(List<String> path, List<Archive> directories) {
         try {
-            if ( path.size() == 2 || directories.size() == 0 ) {
+            if ( path.size() == 2 || directories.isEmpty() ) {
                 return null;
             } else {
                 int index = path.size() - 2;
@@ -444,6 +445,7 @@ public class Midos {
                 } 
             }
             System.out.println("El directorio posee: "+collections.size()+" directorios y una memoria disponible de: "+memory+"K");
+            collections.sort(String::compareToIgnoreCase);
             for (String collection : collections) {
                 System.out.println(collection);
             }
@@ -458,7 +460,6 @@ public class Midos {
      * @param memory
      * @param directories
      * @param parent
-     * @param path
      * @return 
      */
     public static List<Archive> copyCon (String name, int memory, List<Archive> directories, Archive parent) { 
@@ -584,9 +585,56 @@ public class Midos {
         }
         return directories;
     }
-    public static List<Archive> rename(List<Archive> directories, String names, Archive parent) {
+    /**
+     * Rename old file with new name
+     * @since 1.0.2
+     * @param names
+     * @param directories
+     * @param parent
+     * @return 
+     */
+    public static List<Archive> rename(String names, List<Archive> directories,  Archive parent) {
         try {
-            
+            if (!names.isEmpty()) {
+                if (names.startsWith(" ")) {
+                    System.out.println("No puede empezar con espacio");
+                    return directories;
+                }
+                String[] entryNames = names.split("\\s+");
+                System.out.println(entryNames.length);
+                if (entryNames.length > 2) {
+                    return directories;
+                }
+                Archive directory = Archive.getDirectory(entryNames[0], directories);
+                if (directory == null) {
+                    System.out.println("No existe el archivo");
+                    return directories;
+                } else if ( parent != null && directory.parent != parent.name) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( parent == null && directory.possition != 0 ) {
+                    System.out.println("No se encuentra el archivo deseado");
+                    return directories;
+                } else if ( entryNames.length == 0 ) {
+                    System.out.println("No se puede borrar directorios");
+                    return directories;
+                } else {
+                    int getIndex = directories.indexOf(directory);
+                    directory.name = entryNames[1];
+                    directories.set(getIndex, directory);
+                    for (Archive childDirectory : directories) {
+                        if (childDirectory.parent != null && childDirectory.parent.equals(entryNames[0])) {
+                            int childIndex = directories.indexOf(childDirectory);
+                            childDirectory.parent = entryNames[1];
+                            directories.set(childIndex, childDirectory);
+                        }
+                    }
+                    return directories;
+                }
+            } else {
+                System.out.println("Favor ingresar los respectivos archivos");
+                return directories;
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
