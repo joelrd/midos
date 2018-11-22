@@ -1,6 +1,6 @@
 /*
  * @author Henry Rojas Douglas
- * @version 1.0.2
+ * @version 1.0.3
  * @copyright Henry Rojas Douglas
  * @license MIT
  * @package henrojastarea1
@@ -432,22 +432,37 @@ public class Midos {
             } else {
                 System.out.println(parent.name);
             }
-            List<String> collections = new ArrayList<>(); 
+            List<String> folders = new ArrayList<>();
+            List<String> archives = new ArrayList<>(); 
             for (Archive directory : directories) {
                 if ( parent == null ) {
                     if (directory.parent == null) {
-                        collections.add(directory.name+" "+ (directory.isText ? "arch" : "<DIR>"));
+                        if ( directory.isText ) {
+                            archives.add(directory.name+" "+ "arch" );
+                        } else {
+                            folders.add(directory.name+" "+ "<DIR>");
+                        }
                     }
                 } else {
                     if (directory.parent != null && directory.parent.equals(parent.name)) {
-                        collections.add(directory.name+" "+ (directory.isText ? "arch" : "<DIR>"));
+                        if ( directory.isText ) {
+                            archives.add(directory.name+" "+ "arch" );
+                        } else {
+                            folders.add(directory.name+" "+ "<DIR>");
+                        }
                     }
                 } 
             }
-            System.out.println("El directorio posee: "+collections.size()+" directorios y una memoria disponible de: "+memory+"K");
-            collections.sort(String::compareToIgnoreCase);
-            for (String collection : collections) {
-                System.out.println(collection);
+            String folderAmount = folders.size() != 1 ? "directorios" : "directorio";
+            String archiveAmount = archives.size() != 1 ? "archivos" : "archivo";
+            System.out.println("El directorio posee: "+folders.size()+" "+ folderAmount +" y "+archives.size()+" "+ archiveAmount +" con una memoria disponible de: "+memory+"K");
+            archives.sort(String::compareToIgnoreCase);
+            folders.sort(String::compareToIgnoreCase);
+            for (String archive : archives) {
+                System.out.println(archive);
+            }
+            for (String folder : folders) {
+                System.out.println(folder);
             }
         } catch ( Exception ex) {
             ex.printStackTrace();
@@ -489,9 +504,20 @@ public class Midos {
                 } else if (Archive.isDuplicated(name, directories, parentPossition)) {
                     System.out.println("Ya se agrego el archivo");
                 } else {
-                    System.out.print(">");
                     String content = "";
-                    content = e.nextLine();
+                    String betweenLines;
+                    boolean start = true;
+                    System.out.print(">");
+                    while(start) {
+                        betweenLines = e.next();
+                        if (betweenLines.contains("^Z")) {
+                            content += betweenLines.substring(betweenLines.indexOf("^Z") + 2, betweenLines.length());
+                            start = false;
+                        } else {
+                            content += betweenLines + "\n";
+                        }
+                        System.out.print(">");
+                    }
                     Archive archive = new Archive(name, parentName, false, 0, parentPossition, parent == null ? false : true, true, content);
                     if (parent != null) {
                         directories = saveParentDirectory(directories, parent, true, parent.numberOfChildren + 1);
@@ -639,5 +665,51 @@ public class Midos {
             ex.printStackTrace();
         }
         return directories;
+    }
+    /**
+     * Returns all the folder in the system
+     * @since 1.0.3
+     * @param directories 
+     */
+    public static void tree( List<Archive> directories ) {
+        try {
+            for( Archive directory : directories ) {
+                if ( directory.possition == 0 ) {
+                    System.out.println( directory.name );
+                    if ( directory.hasChildren ) {
+                        final String spacer = "    ";
+                        directories.stream().forEach( element -> { 
+                            if ( directory.name.equals( element.getParent() ) ) {
+                                System.out.println(spacer + element.name);
+                                if( element.hasChildren ) {
+                                    recursiveTree( directories, element, spacer + spacer );
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * Iterates within the directorise
+     * @since 1.0.3
+     * @param directories
+     * @param parent
+     * @param spacer 
+     */
+    public static void recursiveTree( List<Archive> directories, Archive parent, String spacer ) {
+        if ( directories.size() > 0 && parent != null ) {
+            directories.stream().forEach( element -> {
+                if ( parent.name.equals( element.getParent() ) ) {
+                    System.out.println(spacer + element.name );
+                    if (element.hasChildren) {
+                        recursiveTree( directories, element, spacer + spacer );
+                    }
+                }
+            });
+        }
     }
 }

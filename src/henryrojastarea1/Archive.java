@@ -1,7 +1,7 @@
 /*
  * Archive Class
  * @author Henry Rojas Douglas
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright Henry Rojas Douglas
  * @license MIT
  * @package henryrojastarea1
