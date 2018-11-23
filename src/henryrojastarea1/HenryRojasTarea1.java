@@ -111,7 +111,7 @@ public class HenryRojasTarea1 {
                     break;
                 case "TREE": Midos.tree(directories);
                     break;
-                default:  Midos.invalidCommand();
+                default:  Midos.invalidCommand(001, "Comando Invalido");
                     break;
                 }
             }

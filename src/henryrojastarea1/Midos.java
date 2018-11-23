@@ -58,6 +58,7 @@ public class Midos {
     /**
      * Make a Archive
      * @since 1.0.1
+     * @since 1.0.2 Error management
      * @param parent
      * @param name
      * @param memory
@@ -74,21 +75,22 @@ public class Midos {
             }
             String convertIntoCapital = name.toUpperCase();
             if (memory < 8) {
-                    System.out.println("No hay memoria disponible");
+                    invalidCommand(002, "No hay memoria disponible");
                 } else if ( convertIntoCapital.isEmpty() ) {
-                    System.out.println("DirectoriOs deben tener nombre");
+                    invalidCommand(003, "DirectoriOs deben tener nombre");
                 } else if ( parent != null && parent.numberOfChildren > 8 ) {
-                    System.out.println("No se pueden agregar mas de 8 directorios");
+                    System.out.println("");
+                    invalidCommand(004, "No se pueden agregar mas de 8 directorios");
                 } else if ( convertIntoCapital.length() > 8 ) {
-                    System.out.println("Los directories no pueden exceder los 8 caracteres");
+                    invalidCommand(005, "Los directories no pueden exceder los 8 caracteres");
                 } else if ( convertIntoCapital.substring(0, 1).matches(".*\\d+.*")) {
-                    System.out.println("Primer caracter no puede ser un numero");
+                    invalidCommand(006, "Primer caracter no puede ser un numero");
                 } else if ( convertIntoCapital.matches("[-/@#$%^&_+=()]") ) {
-                    System.out.println("No se permiten caracteres especiales");
+                    invalidCommand(007, "No se permiten caracteres especiales");
                 } else if (Archive.numberOfRootDirectories(directories) > 8) {
-                    System.out.println("No se pueden agregar mas de 8 directorios");
+                    invalidCommand(8, "No se pueden agregar mas de 8 directorios");
                 } else if (Archive.isDuplicated(name, directories, parentPossition)) {
-                    System.out.println("Ya se agrego el directorio");
+                    invalidCommand(9, "Ya se agrego el directorio");
                 } else {
                     if (parent != null) {
                         directories = saveParentDirectory(directories, parent, true, parent.numberOfChildren + 1);
@@ -137,7 +139,7 @@ public class Midos {
                     case "S": return false;
                     case "N": isExiting = false;
                         break;
-                    default: System.out.println("Solo puede ser S o N");
+                    default: invalidCommand(10, "Solo puede ser S o N");
                         displayPath(path);
                     break;
                 }
@@ -179,14 +181,12 @@ public class Midos {
     /**
      * Invalid Command
      * @since 1.0.1
+     * @since 1.0.3 Receive parameters
      */
-    public static void invalidCommand() {
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("ERROR: 001 Comando inválido.");
+    public static void invalidCommand(int errorNumber, String errorMessage) {
+        String spacer = "     ";
+        String zeros = errorNumber > 9 ? "0" : "00";
+        System.out.println(spacer+"ERROR: "+ zeros + errorNumber+ " "+errorMessage);
     }
     /**
      * Save values in the file
@@ -232,14 +232,14 @@ public class Midos {
             int index = size - 1;
             if ((name.startsWith("..") && name.length() == 2 ) || (name.startsWith(" ..") && name.length() == 3)  ) {
                 if (size == 2) {
-                    System.out.println("Se encuentra en el directorio raiz");
+                    invalidCommand(11, "Se encuentra en el directorio raiz");
                 } else {
                     path.remove(index - 1);
                     return path;
                 }
             } else if (name.startsWith(" \\") && name.length() == 2) {
                 if (size == 2) {
-                    System.out.println("Se encuentra en el directorio raiz");
+                    invalidCommand(11, "Se encuentra en el directorio raiz");
                 } else {
                    for (int i = index - 1; i > 0; i--) {
                        path.remove(i);
@@ -258,16 +258,15 @@ public class Midos {
                                 path.add(index, slashedName+directory.name);
                             }    
                             return path;
-                        } else {
-                            System.out.println("El archivo que trata de accesar no es un directory");
+                        } else {                            
+                            invalidCommand(12, "El archivo que trata de accesar no es un directory");
                             return path;
                         }    
                     } 
                 }
-                System.out.println("No existe un directorio con ese nombre en ese directorio");
+                invalidCommand(13, "No existe un directorio con ese nombre en ese directorio");
             } else {
-                
-                System.out.println("Comando invalido al llamar el directorio");
+                invalidCommand(1, "Comando invalido");
             }
         } catch( Exception ex) {
             ex.printStackTrace();
@@ -335,19 +334,20 @@ public class Midos {
         try {
             Archive directory = Archive.getDirectory(name, directories);
              if (directory == null) {
-                 System.out.println("Caracter invalido");
+                 invalidCommand(14, "Caracter invalido");
                  return directories;
                 } else if ( parent != null && directory.parent != parent.name) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( directory.hasChildren ) {
-                    System.out.println("No se puede borrar carpetas con contenido");
+                    invalidCommand(16, "No se puede borrar carpetas con contenido");
                     return directories;
                 } else if ( parent == null && directory.possition != 0 ) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( directory.isText ) {
                     System.out.println("No se puede borrar archivos");
+                    invalidCommand(16, "No se puede borrar carpetas con contenido");
                     return directories;
                 } else {
                     if (parent != null) {
@@ -390,7 +390,7 @@ public class Midos {
                 path.set(index, "M:\\");
                 path.set(0, ">");
             } else {
-                System.out.println("Comando invalido");
+                invalidCommand(001, "Comando invalido");
             }
             return path;
         } catch ( Exception ex) {
@@ -488,21 +488,21 @@ public class Midos {
             }
             String convertIntoCapital = name.toUpperCase();
             if (memory < 4) {
-                    System.out.println("No hay memoria disponible");
+                    invalidCommand(002, "No hay memoria");
                 } else if ( convertIntoCapital.isEmpty() ) {
-                    System.out.println("DirectoriOs deben tener nombre");
+                    invalidCommand(003, "DirectoriOs deben tener nombre");
                 } else if ( parent != null && parent.numberOfChildren > 8 ) {
-                    System.out.println("No se pueden agregar mas de 8 archivos");
+                    invalidCommand(004, "No se pueden agregar mas de 8 archivos");
                 } else if ( convertIntoCapital.length() > 8 ) {
-                    System.out.println("Los directories no pueden exceder los 8 caracteres");
+                    invalidCommand(005, "Los directories no pueden exceder los 8 caracteres");
                 } else if (convertIntoCapital.substring(0, 1).matches(".*\\d+.*")) {
-                    System.out.println("Primer caracter no puede ser un numero");
+                    invalidCommand(006, "Primer caracter no puede ser un numero");
                 } else if ( convertIntoCapital.matches("[-/@#$%^&_+=()]") ) {
-                    System.out.println("No se permiten caracteres especiales");
+                    invalidCommand(007, "No se permiten caracteres especiales");
                 } else if (Archive.numberOfRootDirectories(directories) > 8) {
-                    System.out.println("No se pueden agregar mas de 8 archivos");
+                    invalidCommand(17, "No se pueden agregar mas de 8 archivos");
                 } else if (Archive.isDuplicated(name, directories, parentPossition)) {
-                    System.out.println("Ya se agrego el archivo");
+                    invalidCommand(18, "Ya se agrego el archivo");
                 } else {
                     String content = "";
                     String betweenLines;
@@ -542,20 +542,20 @@ public class Midos {
             int size = path.size();
             int index = size - 1;
             if (name.isEmpty()) {
-                System.out.println("Favor ingresar un nombre");
+                invalidCommand(18, "Favor ingresar un nombre");
             } else {
                 for (Archive directory : directories ) {
                     if ( directory.possition == index - 1 && directory.name.contentEquals(name)) {
                         
                         if (directory.isText) {
                             if (directory.content.isEmpty()) {
-                                System.out.println("El archivo esta vacio");
+                                invalidCommand(19, "El archivo esta vacio");
                                 return;
                             }   
                             System.out.println(directory.content);
                             return;
                         } else {
-                            System.out.println("El archivo es un directory");
+                            invalidCommand(20, "El archivo es un directory");
                             return;
                         }    
                         
@@ -563,7 +563,7 @@ public class Midos {
                         
                     }
                 }
-                System.out.println("No existe un archivo de texto con ese nombre en ese directorio");
+                invalidCommand(21, "No existe un archivo de texto con ese nombre en ese directorio");
             }
         } catch( Exception ex) {
             ex.printStackTrace();
@@ -581,19 +581,19 @@ public class Midos {
         try {
             Archive directory = Archive.getDirectory(name, directories);
              if (directory == null) {
-                 System.out.println("Caracter invalido");
+                 invalidCommand(14, "Caracter invalido");
                  return directories;
                 } else if ( parent != null && directory.parent != parent.name) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( directory.hasChildren ) {
-                    System.out.println("No se puede borrar carpetas con contenido");
+                    invalidCommand(16, "No se puede borrar carpetas con contenido");
                     return directories;
                 } else if ( parent == null && directory.possition != 0 ) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( !directory.isText ) {
-                    System.out.println("No se puede borrar directorios");
+                    invalidCommand(22, "No se puede borrar directorios");
                     return directories;
                 } else {
                     if (parent != null) {
@@ -623,7 +623,7 @@ public class Midos {
         try {
             if (!names.isEmpty()) {
                 if (names.startsWith(" ")) {
-                    System.out.println("No puede empezar con espacio");
+                    invalidCommand(23, "No puede empezar con espacio");
                     return directories;
                 }
                 String[] entryNames = names.split("\\s+");
@@ -633,16 +633,16 @@ public class Midos {
                 }
                 Archive directory = Archive.getDirectory(entryNames[0], directories);
                 if (directory == null) {
-                    System.out.println("No existe el archivo");
+                    invalidCommand(21, "No existe un archivo de texto con ese nombre en ese directorio");
                     return directories;
                 } else if ( parent != null && directory.parent != parent.name) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( parent == null && directory.possition != 0 ) {
-                    System.out.println("No se encuentra el archivo deseado");
+                    invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( entryNames.length == 0 ) {
-                    System.out.println("No se puede borrar directorios");
+                    invalidCommand(22, "No se puede borrar directorios");
                     return directories;
                 } else {
                     int getIndex = directories.indexOf(directory);
@@ -658,7 +658,7 @@ public class Midos {
                     return directories;
                 }
             } else {
-                System.out.println("Favor ingresar los respectivos archivos");
+                invalidCommand(24, "Favor ingresar los respectivos archivos");
                 return directories;
             }
         } catch (Exception ex) {
