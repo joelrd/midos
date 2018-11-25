@@ -109,7 +109,7 @@ public class HenryRojasTarea1 {
                     break;
                 case "CD": Midos.showTime();
                     break;
-                case "TREE": Midos.tree(directories);
+                case "TREE": Midos.tree(directories, path);
                     break;
                 default:  Midos.invalidCommand(001, "Comando Invalido");
                     break;

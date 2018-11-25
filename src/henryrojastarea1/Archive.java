@@ -223,7 +223,7 @@ public class Archive implements java.io.Serializable {
                         if (parent == null && directory.parent == null ) {
                             return directory;
                         }
-                        if (parent != null && ( directory.parent != null && directory.parent.equals(parent.name))) {
+                        if (parent != null && ( directory.parent != null && directory.parent.equals(parent.name) && (parent.possition + 1) == directory.possition)) {
                             return directory;
                         }
                                 

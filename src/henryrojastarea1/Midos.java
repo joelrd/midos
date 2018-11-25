@@ -80,7 +80,6 @@ public class Midos {
                 } else if ( convertIntoCapital.isEmpty() ) {
                     invalidCommand(003, "DirectoriOs deben tener nombre");
                 } else if ( parent != null && parent.numberOfChildren > 8 ) {
-                    System.out.println("");
                     invalidCommand(004, "No se pueden agregar mas de 8 directorios");
                 } else if ( convertIntoCapital.length() > 8 ) {
                     invalidCommand(005, "Los directories no pueden exceder los 8 caracteres");
@@ -348,7 +347,6 @@ public class Midos {
                     invalidCommand(15, "No se encuentra el archivo deseado");
                     return directories;
                 } else if ( directory.isText ) {
-                    System.out.println("No se puede borrar archivos");
                     invalidCommand(16, "No se puede borrar carpetas con contenido");
                     return directories;
                 } else {
@@ -517,7 +515,6 @@ public class Midos {
                         } else {
                             content += betweenLines + "\n";
                         }
-                        System.out.print(">");
                     }
                     Archive archive = new Archive(name, parentName, false, 0, parentPossition, parent == null ? false : true, true, content);
                     if (parent != null) {
@@ -633,7 +630,6 @@ public class Midos {
                     return directories;
                 }
                 Archive directory = Archive.getDirectory(entryNames[0], directories, parent);
-                System.out.println(directory.parent);
                 if (directory == null) {
                     invalidCommand(21, "No existe un archivo de texto con ese nombre en ese directorio");
                     return directories;
@@ -654,7 +650,7 @@ public class Midos {
                     directory.name = entryNames[1];
                     directories.set(getIndex, directory);
                     for (Archive childDirectory : directories) {
-                        if (childDirectory.parent != null && childDirectory.parent.equals(entryNames[0])) {
+                        if (childDirectory.parent != null && childDirectory.parent.equals(entryNames[0]) && childDirectory.possition == parent.possition + 1) {
                             int childIndex = directories.indexOf(childDirectory);
                             childDirectory.parent = entryNames[1];
                             directories.set(childIndex, childDirectory);
@@ -676,15 +672,19 @@ public class Midos {
      * @since 1.0.3
      * @param directories 
      */
-    public static void tree( List<Archive> directories ) {
+    public static void tree( List<Archive> directories, List<String> path ) {
         try {
+            System.out.println("Listado de rutas de directorios para el volumen MIDOS");
+            System.out.println("El número de serie del volumen es: HenryRojas-111490839");
+            displayPath(path);
+            System.out.println("");
             for( Archive directory : directories ) {
-                if ( directory.possition == 0 ) {
+                if ( directory.possition == 0 && !directory.isText ) {
                     System.out.println( directory.name );
                     if ( directory.hasChildren ) {
                         final String spacer = "    ";
                         directories.stream().forEach( element -> { 
-                            if ( directory.name.equals( element.getParent() ) ) {
+                            if ( directory.name.equals( element.getParent() ) && !element.isIsText() ) {
                                 System.out.println(spacer + element.name);
                                 if( element.hasChildren ) {
                                     recursiveTree( directories, element, spacer + spacer );
@@ -708,7 +708,7 @@ public class Midos {
     public static void recursiveTree( List<Archive> directories, Archive parent, String spacer ) {
         if ( directories.size() > 0 && parent != null ) {
             directories.stream().forEach( element -> {
-                if ( parent.name.equals( element.getParent() ) ) {
+                if ( parent.name.equals( element.getParent() ) && !element.isIsText() ) {
                     System.out.println(spacer + element.name );
                     if (element.hasChildren) {
                         recursiveTree( directories, element, spacer + spacer );
