@@ -67,6 +67,7 @@ public class Midos {
      */
     public static List<Archive> makeDirectory (String name, int memory, List<Archive> directories, Archive parent) { 
         try {
+            name = name.replace(" ", "");
             String parentName = null;
             int parentPossition = 0;
             if (parent != null) {
@@ -333,7 +334,7 @@ public class Midos {
      */
     public static List<Archive> removeDirectory (String name, List<Archive> directories, Archive parent) { 
         try {
-            Archive directory = Archive.getDirectory(name, directories);
+            Archive directory = Archive.getDirectory(name, directories, parent);
              if (directory == null) {
                  invalidCommand(14, "Caracter invalido");
                  return directories;
@@ -579,7 +580,7 @@ public class Midos {
      */
     public static List<Archive> delete (String name, List<Archive> directories, Archive parent) { 
         try {
-            Archive directory = Archive.getDirectory(name, directories);
+            Archive directory = Archive.getDirectory(name, directories, parent);
              if (directory == null) {
                  invalidCommand(14, "Caracter invalido");
                  return directories;
@@ -614,6 +615,7 @@ public class Midos {
     /**
      * Rename old file with new name
      * @since 1.0.2
+     * @since 1.0.3 Fixed an issue that it breaks when just one name has been entered
      * @param names
      * @param directories
      * @param parent
@@ -627,11 +629,11 @@ public class Midos {
                     return directories;
                 }
                 String[] entryNames = names.split("\\s+");
-                System.out.println(entryNames.length);
                 if (entryNames.length > 2) {
                     return directories;
                 }
-                Archive directory = Archive.getDirectory(entryNames[0], directories);
+                Archive directory = Archive.getDirectory(entryNames[0], directories, parent);
+                System.out.println(directory.parent);
                 if (directory == null) {
                     invalidCommand(21, "No existe un archivo de texto con ese nombre en ese directorio");
                     return directories;
@@ -643,6 +645,9 @@ public class Midos {
                     return directories;
                 } else if ( entryNames.length == 0 ) {
                     invalidCommand(22, "No se puede borrar directorios");
+                    return directories;
+                } else if ( entryNames.length == 1 ) {
+                    invalidCommand(24, "Favor ingresar el nuevo nombre");
                     return directories;
                 } else {
                     int getIndex = directories.indexOf(directory);

@@ -1,7 +1,7 @@
 /*
  * Archive Class
  * @author Henry Rojas Douglas
- * @version 1.0.2
+ * @version 1.0.3
  * @copyright Henry Rojas Douglas
  * @license MIT
  * @package henryrojastarea1
@@ -11,6 +11,12 @@ package henryrojastarea1;
 import java.util.List;
 
 public class Archive implements java.io.Serializable {
+    /**
+     * Serial Version
+     * @var
+     * @since 1.0.3
+     */
+    private static final long serialVersionUID = 2405982964636966027L;
     /**
      * Archive name
      * @var
@@ -195,18 +201,32 @@ public class Archive implements java.io.Serializable {
         this.content = content;
     }
     /**
+     * @since 1.0.3
+     * @return 
+     */
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+    /**
      * Gets a directory from given name
      * @since 1.0.1
+     * @since 1.0.3
      * @param name
      * @param directories
      * @return 
      */
-    public static Archive getDirectory(String name, List<Archive> directories) {
+    public static Archive getDirectory(String name, List<Archive> directories, Archive parent) {
         try {
             if (directories.size() > 0 ) {
                 for ( Archive directory : directories) {
                     if (directory.name.contentEquals(name)) {
-                        return directory;
+                        if (parent == null && directory.parent == null ) {
+                            return directory;
+                        }
+                        if (parent != null && ( directory.parent != null && directory.parent.equals(parent.name))) {
+                            return directory;
+                        }
+                                
                     }
                 }
             }
