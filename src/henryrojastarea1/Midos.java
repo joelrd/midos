@@ -220,11 +220,12 @@ public class Midos {
     }
     /**
      * Save values in the file
+     * @since 1.0.1
+     * @param path 
      * @param directories
      * @param name
      * @return 
-     * @since 1.0.1
-     * @param path 
+
      */
     public static List<String> callDirectory(List<String> path, List<Archive> directories, String name) {
         try {
@@ -374,7 +375,6 @@ public class Midos {
      */
     public static List<String> prompt(List<String> path, String name) {
         try {
-            System.out.println(name);
             int index = path.size() - 1;
             if (name.isEmpty() || name.equals("$P $G")) {
                 path.set(0, "M:\\");

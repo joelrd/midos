@@ -42,7 +42,7 @@ Para utilizar los nuevos comandos, se debe escribir donde está el path de MIDOS
 	Muestra la estructura interna de todos los archivos del programa, se utiliza escribiendo solamente el comando seguido por la tecla enter. 
 
 #### Manejo de errores
-| Error | Mensaje de error           											    |
+| Error | Mensaje de error           										|
 |:-----:|:---------------------------------------------------------------:  |
 | 001   | Comando invalido 												    |
 | 002   | No hay memoria 													|
