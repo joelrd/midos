@@ -42,29 +42,29 @@ Para utilizar los nuevos comandos, se debe escribir donde está el path de MIDOS
 	Muestra la estructura interna de todos los archivos del programa, se utiliza escribiendo solamente el comando seguido por la tecla enter. 
 
 #### Manejo de errores
-| Error | Commando           											|
-|:---:|:---------------------------------------------------------------:|
-| 001 | Comando invalido 												|
-| 002 | No hay memoria 													|
-| 003 | Directorios deben tener nombre									|
-| 004 | No se pueden agregar mas de 8 directorios  						|
-| 005 | Los directorios no pueden exceder los 8 caracteres 				|
-| 006 | Primer caracter no puede ser un numero							|
-| 007 | No se permiten caracteres especiales							|
-| 008 | No se pueden agregar mas de 8 directorios						|
-| 009 | Ya se agrego el directorio										|
-| 010 | Solo puede ser S o N											|
-| 011 | Se encuentra en el directorio raiz								|
-| 012 |El archivo que trata de accesar no es un directory				|
-| 013 |No existe un directorio con ese nombre en ese directorio			|
-| 014 | Caracter invalido												|
-| 015 | No se encuentra el archivo deseado								|
-| 016 | No se puede borrar carpetas con contenido						|
-| 017 | No se pueden agregar mas de 8 archivos							|
-| 018 | Favor ingresar un nombre										|
-| 019 | El archivo esta vacio											|
-| 020 | El archivo es un directory										|
-| 021 | No existe un archivo de texto con ese nombre en ese directorio	|
-| 022 | No se puede borrar directorios									|
-| 023 | No puede empezar con espacio									|
+| Error | Mensaje de error           											    |
+|:-----:|:---------------------------------------------------------------:  |
+| 001   | Comando invalido 												    |
+| 002   | No hay memoria 													|
+| 003   | Directorios deben tener nombre									|
+| 004   | No se pueden agregar mas de 8 directorios  						|
+| 005   | Los directorios no pueden exceder los 8 caracteres 				|
+| 006   | Primer caracter no puede ser un numero							|
+| 007   | No se permiten caracteres especiales							    |
+| 008   | No se pueden agregar mas de 8 directorios						    |
+| 009   | Ya se agrego el directorio										|
+| 010   | Solo puede ser S o N											    |
+| 011   | Se encuentra en el directorio raiz								|
+| 012   | El archivo que trata de accesar no es un directory				|
+| 013   | No existe un directorio con ese nombre en ese directorio			|
+| 014   | Caracter invalido													|
+| 015   | No se encuentra el archivo deseado								|
+| 016   | No se puede borrar carpetas con contenido							|
+| 017   | No se pueden agregar mas de 8 archivos							|
+| 018   | Favor ingresar un nombre											|
+| 019   | El archivo esta vacio												|
+| 020   | El archivo es un directory										|
+| 021   | No existe un archivo de texto con ese nombre en ese directorio	|
+| 022   | No se puede borrar directorios									|
+| 023   | No puede empezar con espacio										|
 
