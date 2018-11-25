@@ -67,4 +67,5 @@ Para utilizar los nuevos comandos, se debe escribir donde está el path de MIDOS
 | 021   | No existe un archivo de texto con ese nombre en ese directorio	|
 | 022   | No se puede borrar directorios									|
 | 023   | No puede empezar con espacio										|
+| 024   | Favor ingresar el nuevo nombre									|
 
