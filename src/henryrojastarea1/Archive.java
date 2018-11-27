@@ -225,8 +225,7 @@ public class Archive implements java.io.Serializable {
                         }
                         if (parent != null && ( directory.parent != null && directory.parent.equals(parent.name) && (parent.possition + 1) == directory.possition)) {
                             return directory;
-                        }
-                                
+                        }      
                     }
                 }
             }
@@ -279,5 +278,4 @@ public class Archive implements java.io.Serializable {
         }
         return true;
     }
-    
 }

@@ -27,7 +27,6 @@ public class HenryRojasTarea1 {
      * @since 1.0.1
      */
     static String dictoriesPath = "C:\\MIDOSTRE.txt";
-
     /**
      * @param args the command line arguments
      * @since 1.0.0
