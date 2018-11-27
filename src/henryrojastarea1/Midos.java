@@ -53,7 +53,7 @@ public class Midos {
         System.out.println("MINGOSOFT ® MIDOS");
         System.out.println("© Copyright MINGOSOFT CORPORATION 2018");
         System.out.println("Versión 1.0 Memoria libre: "+memory+"K");
-        System.out.println("Autor: Henry Rojas Douglas - 111490839");
+        System.out.println("Autor: Henry Rojas Douglas - 000000000");
     }
     /**
      * Make a Archive
@@ -675,7 +675,7 @@ public class Midos {
     public static void tree( List<Archive> directories, List<String> path ) {
         try {
             System.out.println("Listado de rutas de directorios para el volumen MIDOS");
-            System.out.println("El número de serie del volumen es: HenryRojas-111490839");
+            System.out.println("El número de serie del volumen es: HenryRojas-000000000");
             displayPath(path);
             System.out.println("");
             for( Archive directory : directories ) {
